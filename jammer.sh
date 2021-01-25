@@ -6,11 +6,11 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-cleanup () {
+cleanup() {
     killall l2ping
-    echo "Do you want to turn off bluetooth (hci0)? [Y/n]"
-    read RESP
-    if [ RESP == 'Y' ]; then
+    printf "\n"
+    read -p "Do you want to turn off bluetooth (hci0)? [Y/n] " RESP
+    if [ $RESP == 'Y' ]; then
         echo "Turning bluetooth off..."
         sudo hciconfig hci0 down
         echo "Done!"

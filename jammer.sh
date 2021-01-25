@@ -6,7 +6,23 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+cleanup () {
+    killall l2ping
+    echo "Do you want to turn off bluetooth (hci0)? [Y/n]"
+    read RESP
+    if [ RESP == 'Y' ]; then
+        echo "Turning bluetooth off..."
+        sudo hciconfig hci0 down
+        echo "Done!"
+    fi
+    exit 0
+}
+
+trap cleanup EXIT
+
+echo "Turning bluetooth on (hci0)..."
 sudo hciconfig hci0 up
+echo "Done!"
 
 while [ 1 ]; do
     DEVICES=$(hcitool scan | awk 'length NR>2{print $1}')

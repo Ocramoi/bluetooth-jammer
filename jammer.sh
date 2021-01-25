@@ -6,6 +6,8 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+sudo hciconfig hci0 up
+
 while [ 1 ]; do
     DEVICES=$(hcitool scan | awk 'length NR>2{print $1}')
     for bd_addr in $DEVICES; do

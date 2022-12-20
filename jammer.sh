@@ -8,7 +8,7 @@ fi
 
 cleanup() {
     if [ -n "$(ps -A -o comm,pmem,rss | grep l2ping)" ]; then
-        killall l2ping
+        sudo killall l2ping
     fi
     printf "\n"
     read -p "Do you want to turn off bluetooth (hci0)? [Y/n] " RESP

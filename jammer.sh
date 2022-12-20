@@ -35,7 +35,7 @@ while [ 1 ]; do
 
     for bd_addr in $DEVICES; do
         echo "Pinging ${bd_addr}..."
-        sudo l2ping -f $bd_addr 2>&1 > /dev/null &
+        for i in {1..1024}; do sudo l2ping -s 512 -f $bd_addr 2>&1 > /dev/null &; done
     done
 
     if [ -n "${DEVICES}" ]; then
